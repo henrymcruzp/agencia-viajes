@@ -1,22 +1,23 @@
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 # RUTA 1: PORTADA
 @app.route('/')
 def home():
-    return """
-    <div style="text-align: center; font-family: Arial, sans-serif;">
-        <h1>✈️ Agencia de Viajes 'Mundo Libre' 🌍</h1>
-        <p>Bienvenido al inicio de tu próxima aventura.</p>
-        <p>Escribe en la URL: <b>/viaje/Europa</b> para ver ofertas.</p>
-    </div>
-    """
+    # Ahora renderiza la plantilla en lugar de texto plano
+    return render_template('index.html')
 
-# RUTA 2: DINÁMICA
+# RUTA 2: ACERCA DE (Requerida por la tarea)
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# RUTA 3: DINÁMICA (Tu ruta personalizada)
 @app.route('/viaje/<destino>')
 def destino(destino):
-    return f"<h1>Paquete turístico para: {destino}</h1><p>Buscando vuelos y hoteles disponibles...</p>"
+    # Pasamos la variable 'destino' a la plantilla HTML
+    return render_template('destino.html', lugar=destino)
 
 if __name__ == '__main__':
     app.run(debug=True)
