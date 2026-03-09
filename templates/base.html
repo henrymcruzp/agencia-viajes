@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mundo Libre - Agencia de Viajessssssssss</title>
+    <title>Sistema de Inventario - Semana 12</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>✈️ Agencia de Viajes 'Mundo Libre' 🌍</h1>
+        <h1>📦 Sistema de Gestión (Semana 12)</h1>
         <nav>
-            <a href="{{ url_for('home') }}">Inicio</a>
-            <a href="{{ url_for('about') }}">Acerca de nosotros</a>
-            <a href="/viaje/Europa">Oferta a Europa</a>
+            <a href="{{ url_for('index') }}">Inicio</a>
+            <a href="{{ url_for('nuevo_producto') }}">Añadir Producto</a>
+            <a href="{{ url_for('datos') }}">Ver Datos Guardados</a>
         </nav>
     </header>
 
@@ -21,7 +21,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 Agencia Mundo Libre. Tu próxima aventura empieza aquí.</p>
+        <p>&copy; 2026 Tarea Semana 12 - Persistencia de Datos</p>
     </footer>
 </body>
 </html>

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>📊 Datos Almacenados (Persistencia Semana 12)</h2>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #f9f9f9;">
+        <h3 style="color: #0056b3;">1. Base de Datos (SQLite)</h3>
+        <ul>
+            {% for prod in productos_db %}
+                <li><strong>ID {{ prod.id }}:</strong> {{ prod.nombre }} | ${{ prod.precio }} | Cant: {{ prod.cantidad }}</li>
+            {% else %}
+                <li>No hay datos en la BD.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #f9f9f9;">
+        <h3 style="color: #28a745;">2. Archivo JSON</h3>
+        <ul>
+            {% for item in datos_json %}
+                <li>{{ item.nombre }} - ${{ item.precio }} ({{ item.cantidad }} uds)</li>
+            {% else %}
+                <li>No hay datos en JSON.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #f9f9f9;">
+        <h3 style="color: #d39e00;">3. Archivo CSV</h3>
+        <ul>
+            {% for fila in datos_csv %}
+                {% if loop.index > 1 %}
+                    <li>Fila {{ loop.index0 }}: {{ fila[0] }} | ${{ fila[1] }} | Cant: {{ fila[2] }}</li>
+                {% endif %}
+            {% else %}
+                <li>No hay datos en CSV.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #f9f9f9;">
+        <h3 style="color: #dc3545;">4. Archivo TXT (Crudo)</h3>
+        <pre style="background: #eee; padding: 10px; border-radius: 4px;">
+{% for linea in datos_txt %}{{ linea }}{% else %}No hay datos en TXT.{% endfor %}
+        </pre>
+    </div>
+
+</div>
+{% endblock %}
