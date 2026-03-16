@@ -1,15 +1,89 @@
-{% extends "base.html" %}
-
-{% block content %}
-    <div style="text-align: center;">
-        <h2>Bienvenido al inicio de tu próxima aventura</h2>
-        <p>Explora el mundo con nosotros. Tenemos los mejores paquetes turísticos para ti.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agencia de Viajes - Gestión MySQL</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #28a745; padding-bottom: 10px; }
         
-        <h3>Destinos Populares:</h3>
-        <ul style="list-style: none; padding: 0;">
-            <li><a href="/viaje/Paris" class="btn">Viajar a París 🇫🇷</a></li>
-            <li><a href="/viaje/Tokio" class="btn">Viajar a Tokio 🇯🇵</a></li>
-            <li><a href="/viaje/Cancun" class="btn">Viajar a Cancún 🇲🇽</a></li>
-        </ul>
+        /* Estilo del formulario de inserción */
+        .form-insert { background: #e9ecef; padding: 20px; border-radius: 5px; margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .form-insert input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn-add { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-add:hover { background-color: #218838; }
+
+        /* Estilo de la tabla */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: center; }
+        th { background-color: #28a745; color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+
+        /* Inputs dentro de la tabla para modificar */
+        .table-input { width: 90%; padding: 5px; border: 1px solid #ddd; border-radius: 3px; text-align: center; }
+        
+        /* Botones de acción */
+        .btn-update { background-color: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+        .btn-update:hover { background-color: #0069d9; }
+        .btn-delete { background-color: #dc3545; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 0.9em; display: inline-block; }
+        .btn-delete:hover { background-color: #c82333; }
+        
+        .footer-note { margin-top: 20px; font-size: 0.85em; color: #666; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>✈️ Panel de Control - Agencia de Viajes</h1>
+
+    <div class="form-insert">
+        <form action="/insertar" method="POST" style="display: contents;">
+            <input type="text" name="nombre" placeholder="Nombre del Destino" required>
+            <input type="text" name="pais" placeholder="País" required>
+            <input type="number" step="0.01" name="precio" placeholder="Precio ($)" required>
+            <button type="submit" class="btn-add">➕ Guardar Destino</button>
+        </form>
     </div>
-{% endblock %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Destino</th>
+                <th>País</th>
+                <th>Precio ($)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for viaje in viajes %}
+            <tr>
+                <form action="/modificar/{{ viaje.id }}" method="POST">
+                    <td>{{ viaje.id }}</td>
+                    <td><input type="text" name="nombre" value="{{ viaje.nombre }}" class="table-input"></td>
+                    <td><input type="text" name="pais" value="{{ viaje.pais }}" class="table-input"></td>
+                    <td><input type="number" step="0.01" name="precio" value="{{ viaje.precio }}" class="table-input"></td>
+                    <td>
+                        <button type="submit" class="btn-update">Actualizar</button>
+                        <a href="/eliminar/{{ viaje.id }}" class="btn-delete" onclick="return confirm('¿Estás seguro de eliminar este destino?')">Eliminar</a>
+                    </td>
+                </form>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No hay destinos registrados en la base de datos.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer-note">
+        <p>Base de Datos MySQL: <strong>Aiven Cloud</strong> | Proyecto Flask Semana 13</p>
+        <p><em>Nota: La tabla obligatoria 'usuarios' ha sido creada correctamente en el servidor.</em></p>
+    </div>
+</div>
+
+</body>
+</html>

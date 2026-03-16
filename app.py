@@ -1,59 +1,88 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-from inventario.bd import guardar_en_archivos, leer_archivos
+from Conexion.conexion import obtener_conexion
 
 app = Flask(__name__)
 
-# Configuración de la Base de Datos SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventario.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-# Modelo de Base de datos (Requisito de la tarea)
-class Producto(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    precio = db.Column(db.Float, nullable=False)
-    cantidad = db.Column(db.Integer, nullable=False)
-
-# Crear la base de datos automáticamente al inicio
-with app.app_context():
-    db.create_all()
+# --- GESTIÓN DE DESTINOS (TU PROYECTO) ---
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    conexion = obtener_conexion()
+    destinos = []
+    if conexion:
+        cursor = conexion.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM destinos")
+        destinos = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+    return render_template('index.html', viajes=destinos)
 
-@app.route('/nuevo_producto', methods=['GET', 'POST'])
-def nuevo_producto():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        precio = float(request.form['precio'])
-        cantidad = int(request.form['cantidad'])
+@app.route('/insertar', methods=['POST'])
+def insertar():
+    nombre = request.form['nombre']
+    pais = request.form['pais']
+    precio = request.form['precio']
+    conexion = obtener_conexion()
+    if conexion:
+        cursor = conexion.cursor()
+        sql = "INSERT INTO destinos (nombre, pais, precio) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (nombre, pais, precio))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+    return redirect(url_for('index'))
 
-        # 1. Guardar en SQLite (Base de datos)
-        nuevo_prod = Producto(nombre=nombre, precio=precio, cantidad=cantidad)
-        db.session.add(nuevo_prod)
-        db.session.commit()
+@app.route('/modificar/<int:id>', methods=['POST'])
+def modificar(id):
+    nombre = request.form['nombre']
+    pais = request.form['pais']
+    precio = request.form['precio']
+    conexion = obtener_conexion()
+    if conexion:
+        cursor = conexion.cursor()
+        sql = "UPDATE destinos SET nombre=%s, pais=%s, precio=%s WHERE id=%s"
+        cursor.execute(sql, (nombre, pais, precio, id))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+    return redirect(url_for('index'))
 
-        # 2. Guardar en Archivos (TXT, JSON, CSV)
-        guardar_en_archivos(nombre, precio, cantidad)
+@app.route('/eliminar/<int:id>')
+def eliminar(id):
+    conexion = obtener_conexion()
+    if conexion:
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM destinos WHERE id = %s", (id,))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+    return redirect(url_for('index'))
 
-        return redirect(url_for('datos'))
-    return render_template('producto_form.html')
+# --- REQUISITO PUNTO 3 (TABLA USUARIOS) ---
 
-@app.route('/datos')
-def datos():
-    # Leer de SQLite
-    productos_db = Producto.query.all()
-    # Leer de archivos
-    datos_txt, datos_json, datos_csv = leer_archivos()
-    
-    return render_template('datos.html', 
-                           productos_db=productos_db,
-                           datos_txt=datos_txt,
-                           datos_json=datos_json,
-                           datos_csv=datos_csv)
+@app.route('/usuarios')
+def lista_usuarios():
+    conexion = obtener_conexion()
+    usuarios = []
+    if conexion:
+        cursor = conexion.cursor(dictionary=True)
+        cursor.execute("SELECT id_usuario, nombre, mail FROM usuarios")
+        usuarios = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+    return f"Tabla Usuarios (Punto 3): {str(usuarios)} <br><br> <a href='/crear_admin'>[Click aquí para insertar un usuario de prueba]</a>"
+
+@app.route('/crear_admin')
+def crear_admin():
+    conexion = obtener_conexion()
+    if conexion:
+        cursor = conexion.cursor()
+        sql = "INSERT INTO usuarios (nombre, mail, password) VALUES (%s, %s, %s)"
+        cursor.execute(sql, ("Admin_Agencia", "admin@viajes.com", "12345"))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+    return "✅ Usuario de prueba creado. Regresa a <a href='/usuarios'>/usuarios</a> para verificar."
 
 if __name__ == '__main__':
     app.run(debug=True)
