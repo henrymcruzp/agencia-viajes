@@ -84,5 +84,10 @@ def crear_admin():
         conexion.close()
     return "✅ Usuario de prueba creado. Regresa a <a href='/usuarios'>/usuarios</a> para verificar."
 
+import os
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Render usa la variable de entorno PORT, si no existe usa el 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Importante: host='0.0.0.0' para que sea visible en la web
+    app.run(host='0.0.0.0', port=port, debug=True)
