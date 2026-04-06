@@ -88,6 +88,18 @@ def insertar():
     insertar_destino(request.form['nombre_destino'], request.form['pais'], request.form['precio'], request.form.get('cupos', 0))
     return redirect(url_for('index'))
 
+@app.route('/actualizar/<int:id_destino>', methods=['POST'])
+@login_required
+def actualizar(id_destino):
+    nombre = request.form['nombre_destino']
+    pais = request.form['pais']
+    precio = request.form['precio']
+    cupos = request.form.get('cupos', 0)
+    
+    actualizar_destino(id_destino, nombre, pais, precio, cupos)
+    flash("Destino actualizado correctamente", "success")
+    return redirect(url_for('index'))
+
 @app.route('/eliminar/<int:id>')
 @login_required
 def eliminar(id):
