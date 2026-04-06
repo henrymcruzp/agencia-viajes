@@ -1,17 +1,13 @@
-# Importamos la conexión que hicimos en el otro archivo
 from Conexion.conexion import obtener_conexion
 
 def configurar_base_datos():
-    # 1. Llamamos a tu conexión
     conexion = obtener_conexion()
     
     if conexion is not None:
-        # 2. El 'cursor' es la herramienta que ejecuta los comandos de SQL
         cursor = conexion.cursor()
         
-        # 3. Escribimos nuestro código SQL básico para crear la tabla
-        # Usamos IF NOT EXISTS para que no dé error si la corremos dos veces
-        sql = """
+        # SQL para la tabla de Destinos (Semana anterior)
+        sql_destinos = """
         CREATE TABLE IF NOT EXISTS destinos (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nombre VARCHAR(100) NOT NULL,
@@ -20,20 +16,33 @@ def configurar_base_datos():
         )
         """
         
+        # SQL para la tabla de Usuarios (REQUISITO SEMANA 13)
+        sql_usuarios = """
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+            nombre VARCHAR(100) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL
+        )
+        """
+        
         try:
-            # 4. Ejecutamos el SQL y guardamos los cambios (commit)
-            cursor.execute(sql)
+            # Creamos la tabla de destinos
+            cursor.execute(sql_destinos)
+            print("✅ Tabla 'destinos' verificada/creada.")
+            
+            # Creamos la tabla de usuarios
+            cursor.execute(sql_usuarios)
+            print("✅ Tabla 'usuarios' verificada/creada correctamente.")
+            
             conexion.commit()
-            print("✅ ¡La tabla 'destinos' se creó correctamente en Aiven!")
             
         except Exception as e:
-            print("❌ Ocurrió un error al crear la tabla:", e)
+            print("❌ Ocurrió un error al crear las tablas:", e)
             
         finally:
-            # 5. Siempre es buena práctica cerrar el cursor y la conexión al terminar
             cursor.close()
             conexion.close()
 
-# Esto hace que la función se ejecute solo si corremos este archivo directamente
 if __name__ == "__main__":
     configurar_base_datos()

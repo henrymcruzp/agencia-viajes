@@ -1,22 +1,15 @@
 import mysql.connector
-import os
-from dotenv import load_dotenv
-
-# Esto carga los datos que pusimos en el archivo .env
-load_dotenv()
 
 def obtener_conexion():
     try:
-        # Nos conectamos a MySQL usando las variables
         conexion = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            port=os.getenv("DB_PORT"),
-            database=os.getenv("DB_NAME")
+            host="bd-agencia-viajes-henrym-55a8.g.aivencloud.com",
+            user="avnadmin",
+            password="AVNS_7I8aRf86TR7fNZd7POO",
+            port=26128,
+            database="defaultdb"
         )
         return conexion
-        
-    except Exception as e:
-        print("Hubo un error al conectar a la base de datos:", e)
+    except mysql.connector.Error as err:
+        print(f"Error al conectar a MySQL: {err}")
         return None
